@@ -289,7 +289,7 @@ make deps
 make build
 ```
 
-> **Note:** `make deps` runs `npm install`, which automatically sets up husky pre-commit hooks. These hooks run Prettier and ESLint on staged files before each commit. In CI environments, use `make deps-ci` instead, which skips hook installation.
+> **Note:** `make deps` runs `npm ci --ignore-scripts`, which performs a clean reproducible install from the lockfile without triggering lifecycle hooks. For development with husky pre-commit hooks (Prettier and ESLint on staged files), run `npm install` directly instead.
 
 Artifact: `dist/cli.js`
 

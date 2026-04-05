@@ -290,7 +290,7 @@ make deps
 make build
 ```
 
-> **注意：** `make deps` 执行 `npm install`，会自动初始化 husky pre-commit 钩子。每次提交时，钩子会对暂存文件执行 Prettier 格式化和 ESLint 检查。CI 环境请使用 `make deps-ci`，该命令会跳过钩子安装。
+> **注意：** `make deps` 执行 `npm ci --ignore-scripts`，从 lockfile 进行干净的可复现安装，不触发生命周期钩子。如需在开发时启用 husky pre-commit 钩子（对暂存文件执行 Prettier 格式化和 ESLint 检查），请直接运行 `npm install`。
 
 产物：`dist/cli.js`
 

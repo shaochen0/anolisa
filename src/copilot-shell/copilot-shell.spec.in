@@ -24,8 +24,11 @@ AI-powered assistant that helps developers through natural language interaction.
 %setup -q
 
 %build
-make deps-ci
+make deps
 make build
+
+%check
+make test
 
 %install
 rm -rf %{buildroot}

@@ -1,7 +1,10 @@
 # Makefile for copilot-shell
 
-.PHONY: help build test deps-ci clean install uninstall \
-        deps bundle lint format preflight start debug rpm
+.PHONY: help deps deps-ci build bundle prepare-package test clean \
+        install uninstall \
+        lint format preflight start debug rpm
+
+.DEFAULT_GOAL := help
 
 # ── Variables ──
 DESTDIR  ?=
@@ -21,37 +24,60 @@ VENDOR_RG_DIR   := vendor/ripgrep/$(VENDOR_ARCH)-$(VENDOR_PLATFORM)
 help:
 	@echo "Usage: make <target>"
 	@echo ""
-	@echo "  build        Build dist/ for distribution (esbuild + prepare)"
-	@echo "  test         Run the test suite"
-	@echo "  deps-ci      Clean-install npm deps (CI / RPM build)"
-	@echo "  clean        Remove generated files"
-	@echo "  install      Install to PREFIX (supports DESTDIR for RPM)"
-	@echo "  uninstall    Remove installed files"
+	@echo "Standard targets:"
+	@echo "  deps             Install dependencies (npm ci --ignore-scripts)"
+	@echo "  build            Build dist/ for distribution (bundle + prepare)"
+	@echo "  test             Run the test suite"
+	@echo "  clean            Remove generated files"
+	@echo "  install          Install to PREFIX (supports DESTDIR for RPM)"
+	@echo "  uninstall        Remove installed files"
+	@echo ""
+	@echo "Build sub-targets:"
+	@echo "  bundle           Run esbuild bundling only"
+	@echo "  prepare-package  Prepare dist/package.json and assets"
+	@echo ""
+	@echo "Development:"
+	@echo "  lint             Lint the code"
+	@echo "  format           Format the code"
+	@echo "  preflight        Run full pre-merge checks"
+	@echo "  start            Start the CLI"
+	@echo "  debug            Start the CLI in debug mode"
+	@echo "  rpm              Build RPM package"
 
 # ══════════════════════════════════════════════════════
 # Build & Test
 # ══════════════════════════════════════════════════════
 
-build:
+deps:
+	npm ci --ignore-scripts
+
+deps-ci: deps  ## Backward-compatible alias for 'deps'
+
+build: bundle prepare-package
+
+bundle:
 	npm run bundle
+
+prepare-package:
 	npm run prepare:package
 
 test:
 	npm run test
 
-deps-ci:
-	npm ci --ignore-scripts
-
 clean:
 	npm run clean
+
+# Build artifacts (map to the step that produces them)
+dist/cli.js: bundle
+dist/package.json: prepare-package
 
 # ══════════════════════════════════════════════════════
 # Install / Uninstall
 # ══════════════════════════════════════════════════════
 # RPM build:   make install DESTDIR=%{buildroot} PREFIX=/usr
-# Direct:      make build && sudo make install
+# Direct:      make deps && make build && sudo make install
 
-install: dist/package.json
+install: dist/cli.js dist/package.json
 	@echo "Installing copilot-shell to $(DESTDIR)$(LIBDIR) ..."
 	# -- runtime code --
 	install -d "$(DESTDIR)$(LIBDIR)"
@@ -99,11 +125,6 @@ uninstall:
 # ══════════════════════════════════════════════════════
 # Development helpers (forwarding to npm scripts)
 # ══════════════════════════════════════════════════════
-
-bundle: build  ## Alias for 'build'
-
-deps:
-	npm install
 
 lint:
 	npm run lint
