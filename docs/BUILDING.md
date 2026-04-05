@@ -223,7 +223,7 @@ if command -v uv &>/dev/null; then
   echo "uv $(uv --version) already installed, skipping"
 else
   # Install uv
-  curl -LsSf --connect-timeout 15 --max-time 60 https://astral.sh/uv/install.sh | sh
+  curl -LsSf --connect-timeout 15 --max-time 60 https://mirrors.ustc.edu.cn/github-release/astral-sh/uv/LatestRelease/uv-installer.sh | sh
   source "$HOME/.$(basename "$SHELL")rc"
 fi
 

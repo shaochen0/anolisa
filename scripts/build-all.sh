@@ -492,19 +492,19 @@ install_uv() {
         fi
     fi
 
-    # 3. Fallback: upstream installer (astral.sh → GitHub)
+    # 3. Fallback: upstream installer (GitHub → USTC mirror)
     info "Installing uv via upstream installer ..."
     curl -LsSf --connect-timeout 15 --max-time 60 \
-        https://astral.sh/uv/install.sh | sh 2>/dev/null || true
+        https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh 2>/dev/null || true
     if [[ -f "$HOME/.local/bin/env" ]]; then
         # shellcheck source=/dev/null
         source "$HOME/.local/bin/env"
     fi
     export PATH="$HOME/.local/bin:$PATH"
     if ! cmd_exists uv; then
-        warn "astral.sh unreachable, trying GitHub mirror ..."
+        warn "GitHub unreachable, trying USTC mirror ..."
         curl -LsSf --connect-timeout 15 --max-time 60 \
-            https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh 2>/dev/null || true
+            https://mirrors.ustc.edu.cn/github-release/astral-sh/uv/LatestRelease/uv-installer.sh | sh 2>/dev/null || true
         if [[ -f "$HOME/.local/bin/env" ]]; then
             # shellcheck source=/dev/null
             source "$HOME/.local/bin/env"
